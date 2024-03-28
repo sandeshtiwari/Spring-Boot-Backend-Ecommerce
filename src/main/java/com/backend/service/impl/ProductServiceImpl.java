@@ -1,6 +1,8 @@
 package com.backend.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +74,20 @@ public class ProductServiceImpl implements ProductService {
 		return productDto;
 	}
 
+	private ProductEntity mapToProductEntity(ProductDto productDto) {
+		ProductEntity productEntity = new ProductEntity();
+		productEntity.setProductId(productDto.getProductId());
+		productEntity.setName(productDto.getName());
+		productEntity.setImage(productDto.getImage());
+		productEntity.setBrand(productDto.getBrand());
+		productEntity.setCategory(productDto.getCategory());
+		productEntity.setDescription(productDto.getDescription());
+		productEntity.setNumReviews(productDto.getNumReviews());
+		productEntity.setPrice(productDto.getPrice());
+		productEntity.setCountInStock(productDto.getCountInStock());
+		return productEntity;
+	}
+
 	@Override
 	public void updateProductImage(int productId, String newImageUrl) {
 		ProductEntity product = productRepository.findById(productId)
@@ -103,6 +119,17 @@ public class ProductServiceImpl implements ProductService {
 		newProduct.setDescription("");
 		productRepository.save(newProduct);
 		return mapToDto(newProduct);
+	}
+
+	@Override
+	public Map<String, String> deleteProduct(ProductDto productDto) throws ProductNotFoundException {
+		ProductEntity productEntity = mapToProductEntity(productDto);
+		productRepository.findById(productEntity.getProductId())
+				.orElseThrow(() -> new ProductNotFoundException("Failed to delete product!"));
+		productRepository.delete(productEntity);
+		Map<String, String> messageMap = new HashMap<String, String>();
+		messageMap.put("message", "Product deleted successfully!");
+		return messageMap;
 	}
 
 }

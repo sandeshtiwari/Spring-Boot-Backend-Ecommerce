@@ -1,6 +1,7 @@
 package com.backend.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.backend.dto.ProductDto;
 import com.backend.dto.ProductsResponseDto;
@@ -19,5 +20,7 @@ public interface ProductService {
 	ProductDto updateProduct(ProductDto oldProductDto);
 
 	ProductDto createProduct();
+
+	Map<String, String> deleteProduct(ProductDto productDto);
 
 }
