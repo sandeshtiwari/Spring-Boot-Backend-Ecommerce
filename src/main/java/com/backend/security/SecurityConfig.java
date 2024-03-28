@@ -28,74 +28,75 @@ import jakarta.servlet.http.HttpServletResponse;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-	
+
 	private final UserDetailsServiceImp userDetailsServiceImp;
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
-	
+
 	@Autowired
 	private CustomLogoutHandler logoutHandler;
-	
 
-	public SecurityConfig(UserDetailsServiceImp userDetailsServiceImp, JwtAuthenticationFilter jwtAuthenticationFilter) {
+	public SecurityConfig(UserDetailsServiceImp userDetailsServiceImp,
+			JwtAuthenticationFilter jwtAuthenticationFilter) {
 		this.userDetailsServiceImp = userDetailsServiceImp;
 		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
 	}
-
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http
 				.cors(cors -> cors.configurationSource(request -> {
-	                CorsConfiguration config = new CorsConfiguration();
-	                config.setAllowCredentials(true);
-	                config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-	                config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-	                config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-CSRF-Token"));
-	                config.setExposedHeaders(Arrays.asList("Custom-Header1", "Custom-Header2"));
-	                return config;
-	            }))
+					CorsConfiguration config = new CorsConfiguration();
+					config.setAllowCredentials(true);
+					config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+					config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+					config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-CSRF-Token"));
+					config.setExposedHeaders(Arrays.asList("Custom-Header1", "Custom-Header2"));
+					return config;
+				}))
 				.csrf(AbstractHttpConfigurer::disable)
 				.authorizeHttpRequests(
 						req -> req.requestMatchers("/api/login/**", "/api/register/**", "/api/products/**")
-						.permitAll()
-						.requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN")
-						.anyRequest()
-						.authenticated())
+								.permitAll()
+								.requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN")
+								.anyRequest()
+								.authenticated())
 				.userDetailsService(userDetailsServiceImp)
-				.sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.exceptionHandling(exceptions -> exceptions
+						.authenticationEntryPoint(new JwtAuthenticationEntryPoint()))
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-				.logout(l ->
-							l.logoutRequestMatcher(new AntPathRequestMatcher("/api/logout", "POST"))
+				.logout(l -> l.logoutRequestMatcher(new AntPathRequestMatcher("/api/logout", "POST"))
 						// l.logoutUrl("/logout")
 						.addLogoutHandler(logoutHandler)
-//						 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()))
+						// .logoutSuccessHandler((request, response, authentication) ->
+						// SecurityContextHolder.clearContext()))
 						.logoutSuccessHandler((request, response, authentication) -> {
 							System.out.println("Logout Success Handler " + request.getHeader("Authorization"));
-		                    if(request.getHeader("Authorization") == null) {
-		                    	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		                    	response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-			                    
-			                    // Custom message for failed logout
-			                    String customMessage = "{\"message\": \"Logout failed. Not Authenticated/Authorized\"}";
-			                    response.getWriter().write(customMessage);
-		                    	return;
-		                    }
+							if (request.getHeader("Authorization") == null) {
+								response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+								response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+								// Custom message for failed logout
+								String customMessage = "{\"message\": \"Logout failed. Not Authenticated/Authorized\"}";
+								response.getWriter().write(customMessage);
+								return;
+							}
 							SecurityContextHolder.clearContext();
-		                    response.setStatus(HttpServletResponse.SC_OK);
-		                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-		                    
-		                    // Custom message for logout
-		                    String customMessage = "{\"message\": \"Logout successful\"}";
-		                    response.getWriter().write(customMessage);
-		                }))
-						.build();
+							response.setStatus(HttpServletResponse.SC_OK);
+							response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+							// Custom message for logout
+							String customMessage = "{\"message\": \"Logout successful\"}";
+							response.getWriter().write(customMessage);
+						}))
+				.build();
 	}
-	
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
+
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
 		return configuration.getAuthenticationManager();
