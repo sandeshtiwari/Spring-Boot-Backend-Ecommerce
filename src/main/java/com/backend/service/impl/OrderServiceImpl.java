@@ -120,7 +120,7 @@ public class OrderServiceImpl implements OrderService {
         // System.err.println("3 Getting order items entity ************************");
         orderResponseDto.setUserId(orderEntity.getUser().getId());
         // System.err.println("4 Getting order items entity ************************");
-        orderResponseDto.setShippingAddressDto(mapToShippingDto(orderEntity.getShippingAddress()));
+        orderResponseDto.setShippingAddress(mapToShippingDto(orderEntity.getShippingAddress()));
         // System.err.println("5 Getting order items entity ************************");
         orderResponseDto.setShippingPrice(orderEntity.getShippingPrice());
         // System.err.println("6 Getting order items entity ************************");

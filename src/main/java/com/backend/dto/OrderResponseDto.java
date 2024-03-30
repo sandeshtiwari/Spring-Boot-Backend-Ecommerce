@@ -17,6 +17,6 @@ public class OrderResponseDto {
     private long shippingPrice;
     private long totalPrice;
     private int userId;
-    private ShippingAddressDto shippingAddressDto;
+    private ShippingAddressDto shippingAddress;
     private List<OrderItemResponseDto> orderItems;
 }
