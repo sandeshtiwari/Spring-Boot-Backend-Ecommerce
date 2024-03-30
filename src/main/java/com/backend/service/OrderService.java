@@ -1,8 +1,9 @@
 package com.backend.service;
 
 import com.backend.dto.OrderRequestDto;
-import com.backend.dto.OrderResponseDto;
+import com.backend.model.OrderEntity;
 
 public interface OrderService {
-    OrderResponseDto createOrder(OrderRequestDto orderRequestDto);
+    // OrderResponseDto createOrder(OrderRequestDto orderRequestDto);
+    OrderEntity createOrder(OrderRequestDto orderRequestDto);
 }
