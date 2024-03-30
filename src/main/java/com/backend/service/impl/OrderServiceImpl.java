@@ -3,12 +3,14 @@ package com.backend.service.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.backend.dto.OrderItemRequestDto;
+import com.backend.dto.OrderItemResponseDto;
 import com.backend.dto.OrderRequestDto;
 import com.backend.dto.OrderResponseDto;
 import com.backend.dto.ShippingAddressDto;
@@ -91,13 +93,14 @@ public class OrderServiceImpl implements OrderService {
         order.setPaid(false);
         order.setDelivered(false);
         order.setCreatedAt(new Date());
-        OrderEntity savedOrder = orderRepository.save(order);
 
         // Save order items with reference to the order
         orderItemsEntities.forEach(item -> {
-            item.setOrderEntity(savedOrder);
+            item.setOrderEntity(order);
             orderItemsRepository.save(item);
         });
+        order.setOrderItemsEntity(orderItemsEntities);
+        OrderEntity savedOrder = orderRepository.save(order);
 
         return mapToResponseDto(savedOrder);
     }
@@ -106,17 +109,39 @@ public class OrderServiceImpl implements OrderService {
         OrderResponseDto orderResponseDto = new OrderResponseDto();
         orderResponseDto.setItemsPrice(orderEntity.getItemsPrice());
         orderResponseDto.setOrderId(orderEntity.getOrderId());
-        System.err.println("Getting order items entity ************************");
-        System.out.println(orderEntity.getOrderItemsEntity());
-        orderResponseDto.setOrderItemsEntity(orderEntity.getOrderItemsEntity());
+        // System.err.println("1 Getting order items entity ************************");
+        // System.out.println(orderEntity.getOrderItemsEntity());
+        orderResponseDto.setOrderItems(orderEntity.getOrderItemsEntity().stream()
+                .map(o -> mapToOrderItemResponseDto(o)).collect(Collectors.toList()));
+        // .stream().map(p -> mapToDto(p)).collect(Collectors.toList())
+        // System.err.println("2 Getting order items entity ************************");
         orderResponseDto.setPaymentMethod(orderEntity.getPaymentMethod());
+        // System.err.println("3 Getting order items entity ************************");
         orderResponseDto.setUserId(orderEntity.getUser().getId());
+        // System.err.println("4 Getting order items entity ************************");
         orderResponseDto.setShippingAddressDto(mapToShippingDto(orderEntity.getShippingAddress()));
+        // System.err.println("5 Getting order items entity ************************");
         orderResponseDto.setShippingPrice(orderEntity.getShippingPrice());
+        // System.err.println("6 Getting order items entity ************************");
         orderResponseDto.setTaxPrice(orderEntity.getTaxPrice());
+        // System.err.println("7 Getting order items entity ************************");
         orderResponseDto.setTotalPrice(orderEntity.getTotalPrice());
-
+        // System.out.println("Returning orderResponseDto " +
+        // orderResponseDto.getOrderId());
         return orderResponseDto;
+    }
+
+    private OrderItemResponseDto mapToOrderItemResponseDto(OrderItemsEntity orderItemsEntity) {
+        OrderItemResponseDto orderItemResponseDto = new OrderItemResponseDto();
+        orderItemResponseDto.setImage(orderItemsEntity.getImage());
+        orderItemResponseDto.setOrderEntityId(orderItemsEntity.getOrderId());
+        orderItemResponseDto.setOrderItemId(orderItemsEntity.getOrderEntity().getOrderId());
+        orderItemResponseDto.setProductEntityId(orderItemsEntity.getProductEntity().getProductId());
+        orderItemResponseDto.setQuantity(orderItemsEntity.getQuantity());
+        orderItemResponseDto.setPrice(orderItemsEntity.getPrice());
+
+        return orderItemResponseDto;
+
     }
 
     private ShippingAddressDto mapToShippingDto(ShippingAddressEntity shippingAddressEntity) {

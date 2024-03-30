@@ -2,8 +2,6 @@ package com.backend.dto;
 
 import java.util.List;
 
-import com.backend.model.OrderItemsEntity;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,5 +18,5 @@ public class OrderResponseDto {
     private long totalPrice;
     private int userId;
     private ShippingAddressDto shippingAddressDto;
-    private List<OrderItemsEntity> orderItemsEntity;
+    private List<OrderItemResponseDto> orderItems;
 }
