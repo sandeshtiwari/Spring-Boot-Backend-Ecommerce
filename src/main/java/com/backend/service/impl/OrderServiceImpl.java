@@ -63,6 +63,7 @@ public class OrderServiceImpl implements OrderService {
                     .orElseThrow(() -> new ProductNotFoundException("Product not found"));
             OrderItemsEntity orderItem = new OrderItemsEntity();
             orderItem.setProductEntity(product);
+            orderItem.setImage(product.getImage());
             orderItem.setQuantity(itemRequest.getQuantity());
             orderItem.setPrice(product.getPrice() * itemRequest.getQuantity());
             itemsPrice += orderItem.getPrice();
