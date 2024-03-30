@@ -52,7 +52,9 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderResponseDto createOrder(OrderRequestDto orderRequestDto) {
         // Validate user
-        UserEntity user = userRepository.findById(orderRequestDto.getUserId())
+        // UserEntity user = userRepository.findById(orderRequestDto.getUserId())
+        // .orElseThrow(() -> new UserNotFoundException("User not found"));
+        UserEntity user = userRepository.findByUsername(orderRequestDto.getUsername())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         // Validate products and calculate prices
@@ -67,7 +69,6 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setQuantity(itemRequest.getQuantity());
             orderItem.setPrice(product.getPrice() * itemRequest.getQuantity());
             itemsPrice += orderItem.getPrice();
-            // Note: Set `orderEntity` for `orderItem` after order creation to avoid null
             // reference
             orderItemsEntities.add(orderItem);
         }

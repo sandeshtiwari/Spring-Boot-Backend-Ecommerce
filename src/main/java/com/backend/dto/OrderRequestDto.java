@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrderRequestDto {
 
-    private int userId;
+    // private int userId;
+    private String username;
     private List<OrderItemRequestDto> items;
     private ShippingAddressDto shippingAddress;
     private String paymentMethod;
