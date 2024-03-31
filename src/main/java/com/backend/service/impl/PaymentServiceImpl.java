@@ -1,10 +1,16 @@
 package com.backend.service.impl;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.backend.dto.PaymentResponseDto;
 import com.backend.model.OrderEntity;
+import com.backend.repository.OrderRepository;
 import com.backend.service.PaymentService;
 import com.backend.service.TokenStorageService;
 import com.stripe.Stripe;
@@ -17,6 +23,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Autowired
     private TokenStorageService tokenStorageService;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private OrderServiceImpl orderServiceImpl;
 
     private final String stripeSecretKey = "sk_test_51P09nj00Kbi1gt3xJwIXtXYLCDK8QrxFpDjOeJogtkpi6z7yIFFZG0NJgxX90imzM6vVAnDPrzcC2jojf3520taD00c2xT69tN";
 
@@ -82,6 +94,31 @@ public class PaymentServiceImpl implements PaymentService {
         paymentResponseDto.setPaymentUrl(session.getUrl());
 
         return paymentResponseDto;
+    }
+
+    @Override
+    public Map<String, String> validateOrderSuccessToken(String token) {
+        Integer orderId = tokenStorageService.getOrderIdForToken(token);
+        Map<String, String> paymentMessage = new HashMap<>();
+        if (orderId != null) {
+            Optional<OrderEntity> orderEntityOptional = orderServiceImpl.findOrderEntityById(orderId);
+            if (orderEntityOptional.isPresent()) {
+                OrderEntity orderEntity = orderEntityOptional.get();
+                orderEntity.setPaid(true);
+                orderEntity.setPaidAt(new Date());
+                orderRepository.save(orderEntity);
+                paymentMessage.put("status", "Success");
+                paymentMessage.put("message", "Order Payment success!");
+                return paymentMessage;
+            }
+            paymentMessage.put("status", "Failed");
+            paymentMessage.put("message", "Order Payment Failed!");
+            return paymentMessage;
+        } else {
+            paymentMessage.put("status", "Failed");
+            paymentMessage.put("message", "Invalid Order Token!");
+            return paymentMessage;
+        }
     }
 
 }

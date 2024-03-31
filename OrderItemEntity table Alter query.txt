@@ -1,0 +1,9 @@
+ALTER TABLE `order_item` DROP FOREIGN KEY `FK551losx9j75ss5d6bfsqvijna`;
+
+ALTER TABLE `order_item` DROP INDEX `UK_qd4o375qvtt45ierlsgsouhlc`;
+
+ALTER TABLE `order_item` ADD CONSTRAINT `FK551losx9j75ss5d6bfsqvijna`
+FOREIGN KEY (`product_id`) REFERENCES `product` (`product_id`);
+
+ALTER TABLE `order_item`
+ADD CONSTRAINT `UK_order_product` UNIQUE (`order_id`, `product_id`);

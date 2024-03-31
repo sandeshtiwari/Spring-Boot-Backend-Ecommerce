@@ -56,26 +56,7 @@ public class OrderController {
 
     @GetMapping("/payment/success")
     public Map<String, String> handlePaymentSuccess(@RequestParam String token) {
-        Integer orderId = tokenStorageService.getOrderIdForToken(token);
-        Map<String, String> paymentMessage = new HashMap<>();
-        if (orderId != null) {
-            Optional<OrderEntity> orderEntityOptional = orderServiceImpl.findOrderEntityById(orderId);
-            if (orderEntityOptional.isPresent()) {
-                OrderEntity orderEntity = orderEntityOptional.get();
-                orderEntity.setPaid(true);
-                orderEntity.setPaidAt(new Date());
-                paymentMessage.put("status", "Success");
-                paymentMessage.put("message", "Order Payment success!");
-                return paymentMessage;
-            }
-            paymentMessage.put("status", "Failed");
-            paymentMessage.put("message", "Order Payment Failed!");
-            return paymentMessage;
-        } else {
-            paymentMessage.put("status", "Failed");
-            paymentMessage.put("message", "Invalid Order Token!");
-            return paymentMessage;
-        }
+        return paymentServiceImpl.validateOrderSuccessToken(token);
     }
 
 }
