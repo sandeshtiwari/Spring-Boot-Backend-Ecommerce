@@ -1,5 +1,8 @@
 package com.backend.service.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,7 +28,7 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public UserResponseDto editUserDetails(UserRequestDto userRequestDto) {
+    public Map<String, String> editUserDetails(UserRequestDto userRequestDto) {
         String tokenUsername = jwtService.extractUsername(userRequestDto.getToken());
         if (!tokenUsername.equals(userRequestDto.getOldUsername())) {
             throw new UserNotFoundException("Invalid token or username. Unable to find user.");
@@ -36,11 +39,16 @@ public class UserServiceImpl implements UserService {
         userEntity.setEmail(userRequestDto.getEmail());
         userEntity.setFirstName(userRequestDto.getFirstName());
         userEntity.setLastName(userRequestDto.getLastName());
-        userEntity.setPassword(passwordEncoder.encode(userRequestDto.getNewPassword()));
+        if (!userRequestDto.getNewPassword().equals("")) {
+            userEntity.setPassword(passwordEncoder.encode(userRequestDto.getNewPassword()));
+        }
         userEntity.setUsername(userRequestDto.getUsername());
         userRepository.save(userEntity);
 
-        return mapToUserResponseDto(userEntity);
+        Map<String, String> response = new HashMap<String, String>();
+        response.put("username", userEntity.getUsername());
+
+        return response;
     }
 
     private UserResponseDto mapToUserResponseDto(UserEntity userEntity) {
