@@ -75,7 +75,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setSuccessUrl("http://localhost:5173/payment?token=" + token)
-                .setCancelUrl("http://localhost:5173/payment/fail")
+                .setCancelUrl("http://localhost:5173/payment?fail=true")
                 .addLineItem(SessionCreateParams.LineItem.builder().setQuantity(1L)
                         .setPriceData(SessionCreateParams.LineItem.PriceData.builder()
                                 .setCurrency("usd")
@@ -113,6 +113,7 @@ public class PaymentServiceImpl implements PaymentService {
             }
             paymentMessage.put("status", "Failed");
             paymentMessage.put("message", "Order Payment Failed!");
+            System.out.println(token);
             return paymentMessage;
         } else {
             paymentMessage.put("status", "Failed");
