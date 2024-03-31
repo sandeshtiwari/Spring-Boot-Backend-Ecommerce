@@ -89,6 +89,14 @@ public class AuthenticationService {
 		return authResponseDto;
 	}
 
+	// public boolean isTokenValid(UserEntity request){
+	// authenticationManager.authenticate(
+	// new UsernamePasswordAuthenticationToken(request.getUsername(),
+	// request.getPassword()));
+	// UserEntity user =
+	// repository.findByUsername(request.getUsername()).orElseThrow();
+	// }
+
 	public AuthenticationResponse authenticate(UserEntity request) {
 		authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
