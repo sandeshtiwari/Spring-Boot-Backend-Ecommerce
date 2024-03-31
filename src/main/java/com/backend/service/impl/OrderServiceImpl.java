@@ -3,6 +3,7 @@ package com.backend.service.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -228,5 +229,9 @@ public class OrderServiceImpl implements OrderService {
     private long calculateShippingFee(long itemsPrice) {
         // shipping fee calculation
         return itemsPrice > 100 ? 10 : 0;
+    }
+
+    public Optional<OrderEntity> findOrderEntityById(int orderId) {
+        return orderRepository.findById(orderId);
     }
 }
