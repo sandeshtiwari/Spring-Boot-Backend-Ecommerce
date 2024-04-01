@@ -103,4 +103,9 @@ public class AdminController {
 		return new ResponseEntity<>(orderAdminResponseDto, HttpStatus.OK);
 	}
 
+	@PutMapping("/delivery")
+	public Map<String, String> toggleDeliverly(@RequestParam(value = "orderId", required = true) int orderId) {
+		return orderServiceImpl.toggleDeliveryStatus(orderId);
+	}
+
 }

@@ -2,7 +2,9 @@ package com.backend.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -201,6 +203,33 @@ public class OrderServiceImpl implements OrderService {
         List<OrderResponseDto> orderResponseDtos = orderEntities.stream().map(o -> mapToResponseDto(o))
                 .collect(Collectors.toList());
         return orderResponseDtos;
+    }
+
+    @Override
+    public Map<String, String> toggleDeliveryStatus(int orderId) {
+        Optional<OrderEntity> orderOptional = orderRepository.findById(orderId);
+
+        if (orderOptional.isPresent()) {
+            OrderEntity orderEntity = orderOptional.get();
+
+            orderEntity.setDelivered(!orderEntity.isDelivered());
+
+            if (orderEntity.isDelivered()) {
+                orderEntity.setDeliveredAt(new Date());
+            } else {
+                orderEntity.setDeliveredAt(null);
+            }
+
+            orderRepository.save(orderEntity);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Successfully toggled delivery status!");
+            return response;
+        } else {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", "Order not found!");
+            return response;
+        }
     }
 
 }

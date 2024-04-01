@@ -28,12 +28,12 @@ public class UserController {
     private OrderServiceImpl orderServiceImpl;
 
     @PutMapping("/edit")
-    public Map<String, String> putMethodName(@RequestBody UserRequestDto userRequestDto) {
+    public Map<String, String> getUserDetails(@RequestBody UserRequestDto userRequestDto) {
         return userServiceImpl.editUserDetails(userRequestDto);
     }
 
     @GetMapping("/orders")
-    public List<OrderResponseDto> getMethodName(@RequestParam String username) {
+    public List<OrderResponseDto> getAllUserOrders(@RequestParam String username) {
         return orderServiceImpl.getAllUserOrders(username);
     }
 
