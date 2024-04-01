@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.backend.dto.CategoryImageDto;
 import com.backend.dto.FileHandlingDto;
+import com.backend.dto.ProductDto;
 import com.backend.model.ProductEntity;
 import com.backend.service.impl.FileUploadImpl;
 import com.backend.service.impl.ProductServiceImpl;
@@ -37,6 +39,18 @@ public class ProductController {
 	@GetMapping("/{id}")
 	public ResponseEntity<ProductEntity> getProductById(@PathVariable(name = "id") int id) {
 		return new ResponseEntity<>(productServiceImpl.getProductById(id), HttpStatus.OK);
+	}
+
+	@GetMapping("/categories")
+	public ResponseEntity<List<CategoryImageDto>> getDistinctCategories() {
+		List<CategoryImageDto> categoriesAndImages = productServiceImpl.getDistinctCategoriesWithImages();
+		return ResponseEntity.ok().body(categoriesAndImages);
+	}
+
+	@GetMapping("/category/{category}")
+	public ResponseEntity<List<ProductDto>> getProductsByCategory(@PathVariable String category) {
+		List<ProductDto> products = productServiceImpl.getProductsByCategory(category);
+		return ResponseEntity.ok(products);
 	}
 
 	// @PostMapping("/upload")

@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.backend.dto.CategoryImageDto;
 import com.backend.dto.ProductDto;
 import com.backend.dto.ProductsResponseDto;
 import com.backend.exceptions.ProductNotFoundException;
@@ -130,6 +131,17 @@ public class ProductServiceImpl implements ProductService {
 		Map<String, String> messageMap = new HashMap<String, String>();
 		messageMap.put("message", "Product deleted successfully!");
 		return messageMap;
+	}
+
+	@Override
+	public List<CategoryImageDto> getDistinctCategoriesWithImages() {
+		return productRepository.findDistinctCategoriesWithImages();
+	}
+
+	@Override
+	public List<ProductDto> getProductsByCategory(String category) {
+		List<ProductEntity> productEntities = productRepository.findByCategory(category);
+		return productEntities.stream().map(this::mapToDto).collect(Collectors.toList());
 	}
 
 }
