@@ -130,6 +130,9 @@ public class OrderServiceImpl implements OrderService {
         orderResponseDto.setTotalPrice(orderEntity.getTotalPrice());
         // System.out.println("Returning orderResponseDto " +
         // orderResponseDto.getOrderId());
+        orderResponseDto.setCreatedAt(orderEntity.getCreatedAt());
+        orderResponseDto.setDeliveredAt(orderEntity.getDeliveredAt());
+        orderResponseDto.setPaidAt(orderEntity.getPaidAt());
         return orderResponseDto;
     }
 
