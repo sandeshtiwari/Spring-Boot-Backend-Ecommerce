@@ -1,5 +1,6 @@
 package com.backend.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,4 +13,6 @@ public interface WishListRepository extends JpaRepository<WishListEntity, Intege
     boolean existsByUserAndProduct(UserEntity user, ProductEntity product);
 
     Optional<WishListEntity> findByUserAndProduct(UserEntity user, ProductEntity product);
+
+    List<WishListEntity> findByUser(UserEntity user);
 }

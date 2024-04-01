@@ -1,5 +1,6 @@
 package com.backend.service;
 
+import com.backend.dto.WishListDto;
 import com.backend.model.ProductEntity;
 import com.backend.model.UserEntity;
 
@@ -9,5 +10,7 @@ public interface WishListService {
     void removeProductFromWishList(UserEntity user, ProductEntity product);
 
     boolean isProductInWishList(UserEntity user, ProductEntity product);
+
+    WishListDto getWishListByUsername(String username);
 
 }
