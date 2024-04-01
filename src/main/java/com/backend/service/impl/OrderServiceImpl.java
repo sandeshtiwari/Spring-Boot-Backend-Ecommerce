@@ -7,12 +7,18 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.backend.dto.OrderAdminResponseDto;
 import com.backend.dto.OrderItemRequestDto;
 import com.backend.dto.OrderItemResponseDto;
 import com.backend.dto.OrderRequestDto;
 import com.backend.dto.OrderResponseDto;
+import com.backend.dto.ProductDto;
+import com.backend.dto.ProductsResponseDto;
 import com.backend.dto.ShippingAddressDto;
 import com.backend.exceptions.ProductNotFoundException;
 import com.backend.exceptions.UserNotFoundException;
@@ -107,6 +113,19 @@ public class OrderServiceImpl implements OrderService {
         return savedOrder;
     }
 
+    @Override
+    public OrderAdminResponseDto getAllOrdersAdmin(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<OrderEntity> allOrders = orderRepository.findAll(pageable);
+        List<OrderEntity> listOfOrders = allOrders.getContent();
+        List<OrderResponseDto> allOrdersResponseDto = listOfOrders.stream().map(p -> mapToResponseDto(p))
+                .collect(Collectors.toList());
+
+        OrderAdminResponseDto orderAdminResponseDto = new OrderAdminResponseDto(allOrdersResponseDto,
+                orderRepository.count());
+        return orderAdminResponseDto;
+    }
+
     private OrderResponseDto mapToResponseDto(OrderEntity orderEntity) {
         OrderResponseDto orderResponseDto = new OrderResponseDto();
         orderResponseDto.setItemsPrice(orderEntity.getItemsPrice());
@@ -177,8 +196,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderResponseDto> getAllUserOrders(int userId) {
-        List<OrderEntity> orderEntities = orderRepository.findByUserId(userId);
+    public List<OrderResponseDto> getAllUserOrders(String username) {
+        List<OrderEntity> orderEntities = orderRepository.findByUserUsername(username);
         List<OrderResponseDto> orderResponseDtos = orderEntities.stream().map(o -> mapToResponseDto(o))
                 .collect(Collectors.toList());
         return orderResponseDtos;

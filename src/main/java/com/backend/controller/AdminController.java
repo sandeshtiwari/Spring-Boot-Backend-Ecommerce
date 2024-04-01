@@ -15,9 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.backend.dto.FileHandlingDto;
+import com.backend.dto.OrderAdminResponseDto;
+import com.backend.dto.OrderResponseDto;
 import com.backend.dto.ProductDto;
 import com.backend.dto.ProductsResponseDto;
 import com.backend.service.impl.FileUploadImpl;
+import com.backend.service.impl.OrderServiceImpl;
 import com.backend.service.impl.ProductServiceImpl;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +36,9 @@ public class AdminController {
 
 	@Autowired
 	private FileUploadImpl fileUploadImpl;
+
+	@Autowired
+	private OrderServiceImpl orderServiceImpl;
 
 	@GetMapping({ "", "/" })
 	public ResponseEntity<String> admin() {
@@ -87,6 +93,14 @@ public class AdminController {
 	@DeleteMapping("/product/delete")
 	public Map<String, String> deleteProduct(@RequestBody ProductDto productDto) {
 		return productServiceImpl.deleteProduct(productDto);
+	}
+
+	@GetMapping("/orders")
+	public ResponseEntity<OrderAdminResponseDto> getOrders(
+			@RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+			@RequestParam(value = "pageSize", defaultValue = "2", required = false) int pageSize) {
+		OrderAdminResponseDto orderAdminResponseDto = orderServiceImpl.getAllOrdersAdmin(pageNo, pageSize);
+		return new ResponseEntity<>(orderAdminResponseDto, HttpStatus.OK);
 	}
 
 }

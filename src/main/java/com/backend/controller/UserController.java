@@ -33,8 +33,8 @@ public class UserController {
     }
 
     @GetMapping("/orders")
-    public List<OrderResponseDto> getMethodName(@RequestParam int userId) {
-        return orderServiceImpl.getAllUserOrders(userId);
+    public List<OrderResponseDto> getMethodName(@RequestParam String username) {
+        return orderServiceImpl.getAllUserOrders(username);
     }
 
 }
