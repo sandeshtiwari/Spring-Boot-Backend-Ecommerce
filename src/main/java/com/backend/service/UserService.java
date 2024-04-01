@@ -10,6 +10,6 @@ public interface UserService {
 
     public Map<String, String> editUserDetails(UserRequestDto userRequestDto);
 
-    UsersAdminResponseDto getAllUserssAdmin(int pageNo, int pageSize)
+    UsersAdminResponseDto getAllUserssAdmin(int pageNo, int pageSize);
 
 }
