@@ -83,4 +83,11 @@ public class UserServiceImpl implements UserService {
         return usersAdminResponseDto;
     }
 
+    @Override
+    public UserEntity getByUsername(String username) {
+        // return userRepository.findById(userId).orElseThrow(() -> new
+        // UserNotFoundException("User not found!"));
+        return userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found!"));
+    }
+
 }
