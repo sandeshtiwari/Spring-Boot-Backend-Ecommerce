@@ -1,15 +1,24 @@
 package com.backend.service.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.backend.dto.OrderAdminResponseDto;
+import com.backend.dto.OrderResponseDto;
 import com.backend.dto.UserRequestDto;
 import com.backend.dto.UserResponseDto;
+import com.backend.dto.UsersAdminResponseDto;
 import com.backend.exceptions.UserNotFoundException;
+import com.backend.model.OrderEntity;
 import com.backend.model.UserEntity;
 import com.backend.repository.UserRepository;
 import com.backend.service.JWTService;
@@ -59,6 +68,19 @@ public class UserServiceImpl implements UserService {
         userResponseDto.setUsername(userEntity.getUsername());
 
         return userResponseDto;
+    }
+
+    @Override
+    public UsersAdminResponseDto getAllUserssAdmin(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<UserEntity> allUsers = userRepository.findAll(pageable);
+        List<UserEntity> listOfOrders = allUsers.getContent();
+        List<UserResponseDto> allUsersResponseDto = listOfOrders.stream().map(p -> mapToUserResponseDto(p))
+                .collect(Collectors.toList());
+
+        UsersAdminResponseDto usersAdminResponseDto = new UsersAdminResponseDto(allUsersResponseDto,
+                userRepository.count());
+        return usersAdminResponseDto;
     }
 
 }

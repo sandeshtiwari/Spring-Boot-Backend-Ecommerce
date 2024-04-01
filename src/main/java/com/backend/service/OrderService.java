@@ -18,4 +18,6 @@ public interface OrderService {
 
     Map<String, String> toggleDeliveryStatus(int orderId);
 
+    void changeCountInStock(String orderToken);
+
 }

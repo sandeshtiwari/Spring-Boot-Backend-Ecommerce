@@ -19,9 +19,12 @@ import com.backend.dto.OrderAdminResponseDto;
 import com.backend.dto.OrderResponseDto;
 import com.backend.dto.ProductDto;
 import com.backend.dto.ProductsResponseDto;
+import com.backend.dto.UsersAdminResponseDto;
 import com.backend.service.impl.FileUploadImpl;
 import com.backend.service.impl.OrderServiceImpl;
 import com.backend.service.impl.ProductServiceImpl;
+import com.backend.service.impl.UserServiceImpl;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,6 +42,9 @@ public class AdminController {
 
 	@Autowired
 	private OrderServiceImpl orderServiceImpl;
+
+	@Autowired
+	private UserServiceImpl userServiceImpl;
 
 	@GetMapping({ "", "/" })
 	public ResponseEntity<String> admin() {
@@ -106,6 +112,14 @@ public class AdminController {
 	@PutMapping("/delivery")
 	public Map<String, String> toggleDeliverly(@RequestParam(value = "orderId", required = true) int orderId) {
 		return orderServiceImpl.toggleDeliveryStatus(orderId);
+	}
+
+	@GetMapping("/users")
+	public ResponseEntity<UsersAdminResponseDto> getUsers(
+			@RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+			@RequestParam(value = "pageSize", defaultValue = "2", required = false) int pageSize) {
+		UsersAdminResponseDto usersAdminResponseDto = userServiceImpl.getAllUserssAdmin(pageNo, pageSize);
+		return new ResponseEntity<>(usersAdminResponseDto, HttpStatus.OK);
 	}
 
 }

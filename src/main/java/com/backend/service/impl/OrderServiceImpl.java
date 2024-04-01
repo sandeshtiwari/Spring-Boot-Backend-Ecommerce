@@ -35,6 +35,7 @@ import com.backend.repository.ProductRepository;
 import com.backend.repository.ShippingAddressRepository;
 import com.backend.repository.UserRepository;
 import com.backend.service.OrderService;
+import com.backend.service.TokenStorageService;
 
 import jakarta.transaction.Transactional;
 
@@ -55,6 +56,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private TokenStorageService tokenStorageService;
 
     @Override
     @Transactional
@@ -230,6 +234,46 @@ public class OrderServiceImpl implements OrderService {
             response.put("error", "Order not found!");
             return response;
         }
+    }
+
+    @Override
+    // @Transactional
+    public void changeCountInStock(String orderToken) {
+
+        int orderId = tokenStorageService.getOrderIdForToken(orderToken);
+
+        OrderEntity orderEntity = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ProductNotFoundException("Order not found with ID: " + orderId));
+
+        List<OrderItemsEntity> orderItems = orderEntity.getOrderItemsEntity();
+        orderItems.forEach(orderItem -> {
+            ProductEntity product = orderItem.getProductEntity();
+            // Optional<ProductEntity> productOptional = productRepository
+            // .findById(orderItem.getProductEntity().getProductId());
+            // if (productOptional.isPresent()) {
+            // ProductEntity product = productOptional.get();
+            System.out.println(product.getCountInStock() + "-" + orderItem.getQuantity());
+            int newCountInStock = (int) (product.getCountInStock() - orderItem.getQuantity());
+            System.out.println(newCountInStock);
+            product.setCountInStock(newCountInStock);
+            System.out.println(product.getProductId() + " ----- " + product.getBrand() + " --- " + product.getCategory()
+                    + " ---- " + product.getName());
+            productRepository.save(product);
+            // }
+            // Optional<ProductEntity> productOptional = productRepository
+            // .findById(orderItem.getProductEntity().getProductId());
+            // if (productOptional.isPresent()) {
+            // ProductEntity product = productOptional.get();
+            // System.out.println(product.getCountInStock() + "-" +
+            // orderItem.getQuantity());
+            // int newCountInStock = (int) (product.getCountInStock() -
+            // orderItem.getQuantity());
+            // System.out.println(newCountInStock);
+            // product.setCountInStock(newCountInStock);
+            // productRepository.save(product);
+            // }
+
+        });
     }
 
 }
